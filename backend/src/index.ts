@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import path from 'path';
 import cron from 'node-cron';
 
 import { authRoutes } from './routes/auth';
@@ -13,19 +14,37 @@ import { errorHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
 import { LotteryService } from './services/LotteryService';
 
-dotenv.config();
+// Load .env from project root
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+
+// Log environment variables for debugging
+console.log('🌍 Environment variables loaded:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(helmet());
+// Configure helmet to be less restrictive in development
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: false,
+}));
+
+// Configure CORS to be more permissive for development
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.NODE_ENV === 'development' 
+      ? ['http://localhost:3000', 'http://127.0.0.1:3000']
+      : process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

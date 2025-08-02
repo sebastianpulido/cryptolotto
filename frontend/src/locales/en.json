@@ -28,6 +28,7 @@
     "titleEnd": "Lottery",
     "subtitle": "Built on Solana blockchain for maximum transparency and instant payouts",
     "cta": "Buy Ticket Now",
+    "buyTicket": "Buy Ticket Now",
     "currentPrize": "Current Prize",
     "activePlayers": "Active Players",
     "timeRemaining": "Time Remaining",
@@ -36,6 +37,9 @@
   },
   "lottery": {
     "currentLottery": "Current Lottery",
+    "currentTitle": "Current Lottery",
+    "currentSubtitle": "Join the most transparent lottery on blockchain",
+    "currentPrize": "Current Prize",
     "ticketPrice": "Ticket Price",
     "totalPool": "Total Pool",
     "ticketsSold": "Sold",
@@ -51,6 +55,10 @@
   "buyTicket": {
     "title": "Buy Lottery Ticket",
     "selectPayment": "Select payment method",
+    "paymentMethod": "Payment Method",
+    "buyWith": "Buy with",
+    "securePayment": "Secure Payment",
+    "transparentDraw": "Transparent Draw",
     "creditCard": "Credit Card",
     "crypto": "Cryptocurrency",
     "processing": "Processing...",

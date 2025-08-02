@@ -15,10 +15,18 @@ interface BuyTicketModalProps {
   onClose: () => void;
 }
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+// Initialize Stripe with proper fallback
+const getStripePromise = () => {
+  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  if (!publishableKey || publishableKey === '') {
+    console.warn('Stripe publishable key not configured, Stripe payments disabled');
+    return null;
+  }
+  return loadStripe(publishableKey);
+};
 
 export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
-  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'crypto'>('stripe');
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'crypto'>('crypto'); // Default to crypto since Stripe might not be configured
   const [isProcessing, setIsProcessing] = useState(false);
   const buyTicketMutation = useBuyTicket();
   const { t } = useLanguage();
@@ -26,6 +34,13 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
   const handleStripePayment = async () => {
     try {
       setIsProcessing(true);
+      
+      const stripePromise = getStripePromise();
+      if (!stripePromise) {
+        toast.error('Stripe not configured for development');
+        return;
+      }
+      
       const stripe = await stripePromise;
       if (!stripe) throw new Error('Stripe no disponible');
 
@@ -55,6 +70,15 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
     try {
       setIsProcessing(true);
 
+      // Check if user is authenticated
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('No authentication token found. Please refresh the page.');
+        return;
+      }
+
+      console.log('Token found:', token.substring(0, 20) + '...');
+
       // Aquí implementarías la lógica de conexión con wallet de Solana
       // Por ahora simularemos una signature
       const mockSignature = 'mock_signature_' + Date.now();
@@ -69,18 +93,32 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
       toast.success(t('buyTicket.success'));
       onClose();
     } catch (error) {
-      toast.error(t('buyTicket.error'));
-      // Error handling for crypto payment processing
+      console.error('Crypto payment error:', error);
+      
+      // More specific error handling
+      if (error instanceof Error) {
+        if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          toast.error('Authentication failed. Please refresh the page and try again.');
+        } else {
+          toast.error(`Payment failed: ${error.message}`);
+        }
+      } else {
+        toast.error(t('buyTicket.error'));
+      }
     } finally {
       setIsProcessing(false);
     }
   };
 
   const paypalInitialOptions = {
-    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '',
+    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || 'mock_paypal_client_id',
     currency: 'USD',
     intent: 'capture',
   };
+
+  // Check if Stripe is configured
+  const isStripeConfigured = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY && 
+                            process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY !== '';
 
   return (
     <AnimatePresence>
@@ -132,15 +170,16 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => setPaymentMethod('stripe')}
+                disabled={!isStripeConfigured}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   paymentMethod === 'stripe'
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
-                }`}
+                } ${!isStripeConfigured ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <CreditCard className="w-5 h-5 mx-auto mb-1 text-blue-600" />
                 <div className="text-xs font-medium">Stripe</div>
-                <div className="text-xs text-gray-500">Visa, MC</div>
+                <div className="text-xs text-gray-500">{isStripeConfigured ? 'Visa, MC' : 'Disabled'}</div>
               </button>
 
               <button
@@ -178,7 +217,7 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
             {paymentMethod === 'stripe' && (
               <button
                 onClick={handleStripePayment}
-                disabled={isProcessing}
+                disabled={isProcessing || !isStripeConfigured}
                 className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-4 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {isProcessing ? (
@@ -207,7 +246,6 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
                     }}
                     onApprove={async data => {
                       try {
-                        // Capturar el pago
                         const response = await fetch('/api/payment/paypal/capture-order', {
                           method: 'POST',
                           headers: {
@@ -225,12 +263,10 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
                         }
                       } catch (error) {
                         toast.error(t('buyTicket.error'));
-                        // Error handling for PayPal payment capture
                       }
                     }}
                     onError={() => {
                       toast.error(t('buyTicket.error'));
-                      // Error handling for PayPal payment errors
                     }}
                   />
                 </PayPalScriptProvider>
@@ -255,10 +291,17 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
             )}
           </div>
 
-          {/* Security Note */}
-          <p className="text-xs text-gray-500 text-center">
-            🔒 {t('buyTicket.securePayment')} • {t('buyTicket.transparentDraw')}
-          </p>
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-4 text-center text-sm text-gray-600">
+            <div>
+              <div className="font-semibold text-green-600">{t('buyTicket.securePayment')}</div>
+              <div>256-bit SSL</div>
+            </div>
+            <div>
+              <div className="font-semibold text-blue-600">{t('buyTicket.transparentDraw')}</div>
+              <div>Blockchain verified</div>
+            </div>
+          </div>
         </motion.div>
       </div>
     </AnimatePresence>

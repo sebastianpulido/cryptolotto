@@ -72,20 +72,40 @@ export class PaymentService {
 
   // Crypto payment
   static async processCryptoPayment(data: PaymentData & { signature: string }): Promise<unknown> {
+    const token = localStorage.getItem('token');
+    console.log('🚀 Making crypto payment request');
+    console.log('🔑 Token:', token ? token.substring(0, 20) + '...' : 'No token');
+    console.log('📦 Request data:', {
+      lotteryId: data.lotteryId,
+      quantity: data.quantity,
+      transactionSignature: data.signature,
+    });
+    
     const response = await fetch(`${API_BASE_URL}/api/payment/crypto`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         lotteryId: data.lotteryId,
         quantity: data.quantity,
-        transactionSignature: data.signature, // ✅ Fix: Map signature to transactionSignature
+        transactionSignature: data.signature,
       }),
     });
 
+    console.log('📡 Response status:', response.status);
+    console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
     const result: PaymentResponse = await response.json();
+    console.log('✅ Success response:', result);
+    
     if (!result.success) {
       throw new Error(result.error || 'Error procesando pago crypto');
     }

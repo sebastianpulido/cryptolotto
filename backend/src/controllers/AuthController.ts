@@ -116,6 +116,25 @@ export class AuthController {
     try {
       const userId = (req as any).user.id;
 
+      // Handle mock user for development
+      if (userId === '1') {
+        const mockUser = {
+          id: '1',
+          email: 'demo@cryptolotto.com',
+          name: 'Usuario Demo',
+          walletAddress: '0x123...',
+          custodialWallet: '0x456...',
+          totalSpent: 0,
+          totalWon: 0,
+          ticketsPurchased: 0,
+          referralCode: 'DEMO123',
+          vipLevel: 'basic',
+          createdAt: new Date(),
+        };
+        res.json({ success: true, data: mockUser });
+        return;
+      }
+
       const { data: user, error } = await supabase
         .from('users')
         .select('*')
