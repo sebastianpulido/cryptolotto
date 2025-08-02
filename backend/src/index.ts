@@ -10,6 +10,7 @@ import { lotteryRoutes } from './routes/lottery';
 import { paymentRoutes } from './routes/payment';
 import { userRoutes } from './routes/user';
 import { adminRoutes } from './routes/admin';
+import healthRoutes from './routes/health';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
 import { LotteryService } from './services/LotteryService';
@@ -57,11 +58,7 @@ app.use('/api/lottery', lotteryRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
-
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
+app.use('/', healthRoutes);
 
 // Error handling
 app.use(errorHandler);
