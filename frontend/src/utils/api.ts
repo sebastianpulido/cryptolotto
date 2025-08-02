@@ -7,6 +7,13 @@ interface ApiResponse<T = unknown> {
   message?: string;
 }
 
+// Define the request options interface to avoid ESLint issues
+interface RequestOptions {
+  method?: string;
+  headers?: Record<string, string>;
+  body?: string;
+}
+
 class ApiClient {
   private baseURL: string;
 
@@ -16,14 +23,14 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestOptions = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
     
     // Obtener token de localStorage si está disponible
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     
-    const config: RequestInit = {
+    const config: RequestOptions = {
       headers: {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
