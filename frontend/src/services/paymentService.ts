@@ -78,7 +78,11 @@ export class PaymentService {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        lotteryId: data.lotteryId,
+        quantity: data.quantity,
+        transactionSignature: data.signature, // ✅ Fix: Map signature to transactionSignature
+      }),
     });
 
     const result: PaymentResponse = await response.json();
