@@ -25,12 +25,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = useAuthState();
-  
-  return (
-    <AuthContext.Provider value={auth}>
-      {children}
-    </AuthContext.Provider>
-  );
+
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
@@ -98,7 +94,7 @@ export function useAuthState() {
 
     const response = await api.post<AuthResponse>('/auth/login', { email, password });
     const { user, token } = response.data.data;
-    
+
     if (typeof window !== 'undefined') {
       localStorage.setItem('token', token);
     }
@@ -108,7 +104,7 @@ export function useAuthState() {
   const register = async (email: string, name: string, password: string) => {
     const response = await api.post<AuthResponse>('/auth/register', { email, name, password });
     const { user, token } = response.data.data;
-    
+
     if (typeof window !== 'undefined') {
       localStorage.setItem('token', token);
     }
@@ -127,6 +123,6 @@ export function useAuthState() {
     login,
     register,
     logout,
-    isLoading
+    isLoading,
   };
 }

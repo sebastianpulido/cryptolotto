@@ -29,15 +29,15 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
       const stripe = await stripePromise;
       if (!stripe) throw new Error('Stripe no disponible');
 
-      const result = await buyTicketMutation.mutateAsync({
+      const result = (await buyTicketMutation.mutateAsync({
         method: 'stripe',
         lotteryId: lottery.id,
-        quantity: 1
-      }) as { sessionId: string; url: string };
+        quantity: 1,
+      })) as { sessionId: string; url: string };
 
       // Redirigir a Stripe Checkout
       const { error } = await stripe.redirectToCheckout({
-        sessionId: result.sessionId
+        sessionId: result.sessionId,
       });
 
       if (error) {
@@ -54,16 +54,16 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
   const handleCryptoPayment = async () => {
     try {
       setIsProcessing(true);
-      
+
       // Aquí implementarías la lógica de conexión con wallet de Solana
       // Por ahora simularemos una signature
       const mockSignature = 'mock_signature_' + Date.now();
-      
+
       await buyTicketMutation.mutateAsync({
         method: 'crypto',
         lotteryId: lottery.id,
         quantity: 1,
-        signature: mockSignature
+        signature: mockSignature,
       });
 
       toast.success(t('buyTicket.success'));
@@ -101,9 +101,7 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
 
           {/* Header */}
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {t('buyTicket.title')}
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('buyTicket.title')}</h2>
             <p className="text-gray-600">
               Round #{lottery.round} • {t('buyTicket.price')}: $1 USD
             </p>
@@ -119,24 +117,18 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
             </div>
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-gray-600">{t('lottery.ticketsSold')}:</span>
-              <span className="font-semibold">
-                {lottery.ticketsSold.toLocaleString()}
-              </span>
+              <span className="font-semibold">{lottery.ticketsSold.toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">{t('buyTicket.yourNumber')}:</span>
-              <span className="font-bold text-blue-600">
-                #{lottery.ticketsSold + 1}
-              </span>
+              <span className="font-bold text-blue-600">#{lottery.ticketsSold + 1}</span>
             </div>
           </div>
 
           {/* Payment Method Selection */}
           <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">
-              {t('buyTicket.paymentMethod')}
-            </h3>
-            
+            <h3 className="font-semibold text-gray-900 mb-3">{t('buyTicket.paymentMethod')}</h3>
+
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => setPaymentMethod('stripe')}
@@ -206,21 +198,21 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
                   <PayPalButtons
                     style={{ layout: 'vertical' }}
                     createOrder={async () => {
-                      const result = await buyTicketMutation.mutateAsync({
+                      const result = (await buyTicketMutation.mutateAsync({
                         method: 'paypal',
                         lotteryId: lottery.id,
-                        quantity: 1
-                      }) as { orderId: string; approvalUrl: string };
+                        quantity: 1,
+                      })) as { orderId: string; approvalUrl: string };
                       return result.orderId;
                     }}
-                    onApprove={async (data) => {
+                    onApprove={async data => {
                       try {
                         // Capturar el pago
                         const response = await fetch('/api/payment/paypal/capture-order', {
                           method: 'POST',
                           headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
                           },
                           body: JSON.stringify({ orderId: data.orderID }),
                         });

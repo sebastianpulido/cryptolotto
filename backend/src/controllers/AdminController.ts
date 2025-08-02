@@ -55,7 +55,8 @@ export class AdminController {
     try {
       const { data: payments, error } = await supabase
         .from('tickets')
-        .select(`
+        .select(
+          `
           id,
           price,
           payment_method,
@@ -63,7 +64,8 @@ export class AdminController {
           transaction_hash,
           users (email, name),
           lotteries (round)
-        `)
+        `
+        )
         .order('purchase_time', { ascending: false });
 
       if (error) throw error;

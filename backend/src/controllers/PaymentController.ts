@@ -81,12 +81,12 @@ export class PaymentController {
         customer_email: (req as any).user.email,
       });
 
-      res.json({ 
-        success: true, 
-        data: { 
+      res.json({
+        success: true,
+        data: {
           sessionId: session.id,
-          url: session.url 
-        } 
+          url: session.url,
+        },
       });
     } catch (error) {
       logger.error('Error creando sesión de Stripe:', error);
@@ -106,7 +106,9 @@ export class PaymentController {
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (error) {
       logger.error('Error verificando webhook de Stripe:', error);
-      res.status(400).send(`Webhook Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      res
+        .status(400)
+        .send(`Webhook Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       return;
     }
 
@@ -117,7 +119,7 @@ export class PaymentController {
           await PaymentController.handleSuccessfulPayment(session);
           break;
         }
-        
+
         case 'payment_intent.payment_failed': {
           const paymentIntent = event.data.object as Stripe.PaymentIntent;
           logger.error('Pago fallido:', paymentIntent.id);
@@ -138,7 +140,7 @@ export class PaymentController {
   // Procesar pago exitoso
   private static async handleSuccessfulPayment(session: Stripe.Checkout.Session): Promise<void> {
     const { userId, lotteryId, quantity } = session.metadata!;
-    
+
     try {
       // Crear tickets en la base de datos
       for (let i = 0; i < parseInt(quantity); i++) {
@@ -177,7 +179,7 @@ export class PaymentController {
       const totalAmount = (lottery.ticketPrice * quantity).toFixed(2);
 
       // Crear orden en PayPal
-      const order = await PaymentController.createPayPalOrderRequest({
+      const order = (await PaymentController.createPayPalOrderRequest({
         intent: 'CAPTURE',
         purchase_units: [
           {
@@ -195,14 +197,14 @@ export class PaymentController {
           brand_name: 'CryptoLotto',
           user_action: 'PAY_NOW',
         },
-      }) as PayPalOrder;
+      })) as PayPalOrder;
 
-      res.json({ 
-        success: true, 
-        data: { 
+      res.json({
+        success: true,
+        data: {
           orderId: order.id,
-          approvalUrl: order.links?.find(link => link.rel === 'approve')?.href 
-        } 
+          approvalUrl: order.links?.find(link => link.rel === 'approve')?.href,
+        },
       });
     } catch (error) {
       logger.error('Error creando orden de PayPal:', error);
@@ -216,8 +218,8 @@ export class PaymentController {
     try {
       const { orderId } = req.body;
 
-      const capture = await PaymentController.capturePayPalOrderRequest(orderId) as PayPalCapture;
-      
+      const capture = (await PaymentController.capturePayPalOrderRequest(orderId)) as PayPalCapture;
+
       if (capture.status === 'COMPLETED') {
         // Extraer información del custom_id
         const customId = capture.purchase_units[0].payments.captures[0].custom_id;
@@ -297,14 +299,16 @@ export class PaymentController {
 
       const { data: tickets, error } = await supabase
         .from('tickets')
-        .select(`
+        .select(
+          `
           id,
           price,
           payment_method,
           purchase_time,
           transaction_hash,
           lotteries (round, status)
-        `)
+        `
+        )
         .eq('user_id', userId)
         .order('purchase_time', { ascending: false });
 
@@ -320,12 +324,12 @@ export class PaymentController {
   // Métodos auxiliares para PayPal
   private static async createPayPalOrderRequest(orderData: any): Promise<unknown> {
     const accessToken = await PaymentController.getPayPalAccessToken();
-    
+
     const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(orderData),
     });
@@ -339,14 +343,17 @@ export class PaymentController {
 
   private static async capturePayPalOrderRequest(orderId: string): Promise<unknown> {
     const accessToken = await PaymentController.getPayPalAccessToken();
-    
-    const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
+
+    const response = await fetch(
+      `${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`PayPal API error: ${response.statusText}`);
@@ -356,13 +363,15 @@ export class PaymentController {
   }
 
   private static async getPayPalAccessToken(): Promise<string> {
-    const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64');
-    
+    const auth = Buffer.from(
+      `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
+    ).toString('base64');
+
     const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${auth}`,
+        Authorization: `Basic ${auth}`,
       },
       body: 'grant_type=client_credentials',
     });
@@ -371,7 +380,7 @@ export class PaymentController {
       throw new Error(`PayPal auth error: ${response.statusText}`);
     }
 
-    const data = await response.json() as PayPalTokenResponse;
+    const data = (await response.json()) as PayPalTokenResponse;
     return data.access_token;
   }
 }

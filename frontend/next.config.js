@@ -22,7 +22,7 @@ const nextConfig = {
         'form-data': false,
       };
     }
-    
+
     // Ignorar warnings de módulos críticos
     config.ignoreWarnings = [
       { module: /node_modules\/node-fetch\/lib\/index\.js/ },
@@ -38,12 +38,12 @@ const nextConfig = {
       'follow-redirects': false,
       'form-data': false,
     };
-    
+
     return config;
   },
   experimental: {
     esmExternals: 'loose',
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

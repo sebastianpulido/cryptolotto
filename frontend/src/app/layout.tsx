@@ -8,7 +8,8 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'CryptoLotto - Lotería Blockchain Transparente',
-  description: 'La lotería más transparente del mundo construida en Solana. Compra tickets en 1 click y participa en sorteos verificables.',
+  description:
+    'La lotería más transparente del mundo construida en Solana. Compra tickets en 1 click y participa en sorteos verificables.',
   keywords: 'lotería, blockchain, solana, cripto, transparente, sorteo',
   authors: [{ name: 'CryptoLotto Team' }],
   openGraph: {
@@ -18,17 +19,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
       <body className={inter.className}>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

@@ -23,7 +23,9 @@ export function StatsCard({ icon, title, value, color }: StatsCardProps) {
       whileHover={{ scale: 1.05 }}
       className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20"
     >
-      <div className={`w-12 h-12 rounded-lg ${colorClasses[color]} flex items-center justify-center mb-3 mx-auto`}>
+      <div
+        className={`w-12 h-12 rounded-lg ${colorClasses[color]} flex items-center justify-center mb-3 mx-auto`}
+      >
         {icon}
       </div>
       <div className="text-center">

@@ -12,7 +12,7 @@ const resources = {
   es: { translation: es },
   en: { translation: en },
   fr: { translation: fr },
-  pt: { translation: pt }
+  pt: { translation: pt },
 };
 
 i18n
@@ -22,11 +22,11 @@ i18n
     resources,
     fallbackLng: 'es', // Default to Spanish
     debug: process.env.NODE_ENV === 'development',
-    
+
     interpolation: {
       escapeValue: false, // React already does escaping
     },
-    
+
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],

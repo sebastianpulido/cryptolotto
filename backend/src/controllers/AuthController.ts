@@ -17,9 +17,9 @@ export class AuthController {
         .single();
 
       if (existingUser) {
-        res.status(400).json({ 
-          success: false, 
-          error: 'El usuario ya existe' 
+        res.status(400).json({
+          success: false,
+          error: 'El usuario ya existe',
         });
         return;
       }
@@ -33,7 +33,7 @@ export class AuthController {
         .insert({
           email,
           name,
-          password: hashedPassword
+          password: hashedPassword,
         })
         .select()
         .single();
@@ -41,15 +41,11 @@ export class AuthController {
       if (error) throw error;
 
       // Generar JWT
-      const token = jwt.sign(
-        { userId: user.id },
-        process.env.JWT_SECRET!,
-        { expiresIn: '7d' }
-      );
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: '7d' });
 
       res.json({
         success: true,
-        data: { user, token }
+        data: { user, token },
       });
     } catch (error) {
       logger.error('Error en registro:', error);
@@ -71,7 +67,7 @@ export class AuthController {
       if (error || !user) {
         res.status(401).json({
           success: false,
-          error: 'Credenciales inválidas'
+          error: 'Credenciales inválidas',
         });
         return;
       }
@@ -81,24 +77,20 @@ export class AuthController {
       if (!isValidPassword) {
         res.status(401).json({
           success: false,
-          error: 'Credenciales inválidas'
+          error: 'Credenciales inválidas',
         });
         return;
       }
 
       // Generar JWT
-      const token = jwt.sign(
-        { userId: user.id },
-        process.env.JWT_SECRET!,
-        { expiresIn: '7d' }
-      );
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: '7d' });
 
       // Remover password de la respuesta
       delete user.password;
 
       res.json({
         success: true,
-        data: { user, token }
+        data: { user, token },
       });
     } catch (error) {
       logger.error('Error en login:', error);
@@ -123,7 +115,7 @@ export class AuthController {
   static async getProfile(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user.id;
-      
+
       const { data: user, error } = await supabase
         .from('users')
         .select('*')

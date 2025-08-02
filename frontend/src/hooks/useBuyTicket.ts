@@ -14,10 +14,10 @@ export function useBuyTicket() {
       switch (data.method) {
         case 'stripe':
           return await PaymentService.createStripeSession(data);
-        
+
         case 'paypal':
           return await PaymentService.createPayPalOrder(data);
-        
+
         case 'crypto':
           if (!data.signature) {
             throw new Error('Signature requerida para pagos crypto');
@@ -27,7 +27,7 @@ export function useBuyTicket() {
             quantity: data.quantity,
             signature: data.signature,
           });
-        
+
         default:
           throw new Error('Método de pago no soportado');
       }

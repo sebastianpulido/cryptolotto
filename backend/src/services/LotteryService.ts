@@ -58,11 +58,7 @@ export class LotteryService {
 
   static async getLotteryById(id: string): Promise<Lottery | null> {
     try {
-      const { data, error } = await supabase
-        .from('lotteries')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('lotteries').select('*').eq('id', id).single();
 
       if (error) {
         logger.error('Error obteniendo lotería por ID:', error);
@@ -99,15 +95,11 @@ export class LotteryService {
         totalPool: 0,
         ticketsSold: 0,
         maxTickets: 10000,
-        status: 'active'
+        status: 'active',
       };
 
       // Crear en Supabase
-      const { data, error } = await supabase
-        .from('lotteries')
-        .insert(lottery)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('lotteries').insert(lottery).select().single();
 
       if (error) throw error;
 
@@ -123,20 +115,20 @@ export class LotteryService {
   }
 
   static async buyTicket(
-    userId: string, 
-    lotteryId: string, 
-    paymentMethod: string, 
+    userId: string,
+    lotteryId: string,
+    paymentMethod: string,
     paymentData?: any
   ): Promise<Ticket> {
     try {
       const lottery = await this.getCurrentLottery();
       if (!lottery) throw new Error('No hay lotería activa');
-  
+
       // Verificar que la lotería no esté llena
       if (lottery.ticketsSold >= lottery.maxTickets) {
         throw new Error('Lotería llena');
       }
-  
+
       // Crear ticket en base de datos
       const ticket: Partial<Ticket> = {
         lotteryId,
@@ -145,27 +137,26 @@ export class LotteryService {
         purchaseTime: new Date(),
         price: lottery.ticketPrice,
         paymentMethod,
-        transactionHash: paymentData?.stripeSessionId || paymentData?.paypalOrderId || paymentData?.transactionSignature,
+        transactionHash:
+          paymentData?.stripeSessionId ||
+          paymentData?.paypalOrderId ||
+          paymentData?.transactionSignature,
         paymentData: paymentData ? JSON.stringify(paymentData) : undefined,
       };
-  
-      const { data, error } = await supabase
-        .from('tickets')
-        .insert(ticket)
-        .select()
-        .single();
-  
+
+      const { data, error } = await supabase.from('tickets').insert(ticket).select().single();
+
       if (error) throw error;
-  
+
       // Actualizar contador de tickets vendidos
       await supabase
         .from('lotteries')
-        .update({ 
+        .update({
           tickets_sold: lottery.ticketsSold + 1,
-          total_pool: lottery.totalPool + lottery.ticketPrice
+          total_pool: lottery.totalPool + lottery.ticketPrice,
         })
         .eq('id', lotteryId);
-  
+
       return data;
     } catch (error) {
       logger.error('Error comprando ticket:', error);
@@ -189,9 +180,9 @@ export class LotteryService {
       // Actualizar lotería
       await supabase
         .from('lotteries')
-        .update({ 
+        .update({
           status: 'completed',
-          winnerTicket
+          winnerTicket,
         })
         .eq('id', lottery.id);
 

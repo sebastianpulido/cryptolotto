@@ -18,7 +18,7 @@ export class PaymentService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify(data),
     });
@@ -32,12 +32,14 @@ export class PaymentService {
   }
 
   // PayPal payment
-  static async createPayPalOrder(data: PaymentData): Promise<{ orderId: string; approvalUrl: string }> {
+  static async createPayPalOrder(
+    data: PaymentData
+  ): Promise<{ orderId: string; approvalUrl: string }> {
     const response = await fetch(`${API_BASE_URL}/api/payment/paypal/create-order`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify(data),
     });
@@ -55,7 +57,7 @@ export class PaymentService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify({ orderId }),
     });
@@ -74,7 +76,7 @@ export class PaymentService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       body: JSON.stringify(data),
     });

@@ -6,7 +6,7 @@ export class UserController {
   static async getProfile(req: Request, res: Response) {
     try {
       const userId = (req as any).user.id;
-      
+
       const { data: user, error } = await supabase
         .from('users')
         .select('id, email, name, created_at, role')
@@ -49,7 +49,8 @@ export class UserController {
 
       const { data: tickets, error } = await supabase
         .from('tickets')
-        .select(`
+        .select(
+          `
           id,
           ticket_number,
           price,
@@ -62,7 +63,8 @@ export class UserController {
             end_time,
             winner_ticket
           )
-        `)
+        `
+        )
         .eq('user_id', userId)
         .order('purchase_time', { ascending: false });
 

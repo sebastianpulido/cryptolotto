@@ -27,10 +27,13 @@ export function LotteryCard({ lottery, onBuyTicket }: LotteryCardProps) {
       <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-3xl p-8 md:p-12 relative overflow-hidden group hover:border-yellow-400/50 transition-all duration-500">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 20% 80%, #fbbf24 0%, transparent 50%), 
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 20% 80%, #fbbf24 0%, transparent 50%), 
                              radial-gradient(circle at 80% 20%, #fbbf24 0%, transparent 50%)`,
-          }}></div>
+            }}
+          ></div>
         </div>
 
         <div className="relative z-10">
@@ -40,12 +43,8 @@ export function LotteryCard({ lottery, onBuyTicket }: LotteryCardProps) {
               <Zap className="w-4 h-4 text-yellow-400" />
               <span className="text-yellow-400 text-sm font-semibold">ROUND #{lottery.round}</span>
             </div>
-            <h3 className="text-3xl md:text-4xl font-black text-white mb-2">
-              SORTEO ACTIVO
-            </h3>
-            <p className="text-gray-400">
-              Participa ahora y gana el premio acumulado
-            </p>
+            <h3 className="text-3xl md:text-4xl font-black text-white mb-2">SORTEO ACTIVO</h3>
+            <p className="text-gray-400">Participa ahora y gana el premio acumulado</p>
           </div>
 
           {/* Prize Pool */}
@@ -75,7 +74,9 @@ export function LotteryCard({ lottery, onBuyTicket }: LotteryCardProps) {
             </div>
             <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 text-center group-hover:border-gray-600 transition-colors">
               <Clock className="w-6 h-6 text-yellow-400 mx-auto mb-2" />
-              <div className="text-xl font-bold text-white">{days}d {hours}h</div>
+              <div className="text-xl font-bold text-white">
+                {days}d {hours}h
+              </div>
               <div className="text-xs text-gray-400 uppercase tracking-wider">Restante</div>
             </div>
           </div>
@@ -90,7 +91,7 @@ export function LotteryCard({ lottery, onBuyTicket }: LotteryCardProps) {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
+                transition={{ duration: 1.5, ease: 'easeOut' }}
                 className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-full rounded-full relative"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
@@ -101,7 +102,9 @@ export function LotteryCard({ lottery, onBuyTicket }: LotteryCardProps) {
           {/* Countdown */}
           <div className="bg-black/30 border border-gray-700 rounded-2xl p-6 mb-8">
             <div className="text-center">
-              <div className="text-gray-300 text-sm mb-3 uppercase tracking-wider">Tiempo restante</div>
+              <div className="text-gray-300 text-sm mb-3 uppercase tracking-wider">
+                Tiempo restante
+              </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <div className="text-2xl md:text-3xl font-black text-yellow-400">{days}</div>
@@ -121,7 +124,7 @@ export function LotteryCard({ lottery, onBuyTicket }: LotteryCardProps) {
 
           {/* Buy Button */}
           <motion.button
-            whileHover={{ scale: 1.02, boxShadow: "0 20px 40px rgba(251, 191, 36, 0.3)" }}
+            whileHover={{ scale: 1.02, boxShadow: '0 20px 40px rgba(251, 191, 36, 0.3)' }}
             whileTap={{ scale: 0.98 }}
             onClick={onBuyTicket}
             className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-black text-xl py-6 rounded-2xl shadow-2xl hover:shadow-yellow-400/25 transition-all duration-300 relative overflow-hidden group"

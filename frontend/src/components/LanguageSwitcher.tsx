@@ -9,7 +9,7 @@ const languages = [
   { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'pt', name: 'Português', flag: '🇧🇷' }
+  { code: 'pt', name: 'Português', flag: '🇧🇷' },
 ] as const;
 
 export function LanguageSwitcher() {
@@ -39,7 +39,7 @@ export function LanguageSwitcher() {
             exit={{ opacity: 0, y: -10 }}
             className="absolute top-full mt-2 right-0 bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden z-50"
           >
-            {languages.map((lang) => (
+            {languages.map(lang => (
               <motion.button
                 key={lang.code}
                 onClick={() => {
@@ -60,12 +60,7 @@ export function LanguageSwitcher() {
       </AnimatePresence>
 
       {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />}
     </div>
   );
 }

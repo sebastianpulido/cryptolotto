@@ -2,14 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Zap, 
-  Shield, 
-  Trophy, 
-  Users, 
-  Menu,
-  X
-} from 'lucide-react';
+import { Zap, Shield, Trophy, Users, Menu, X } from 'lucide-react';
 import { useLottery } from '@/hooks/useLottery';
 import { useLanguage } from '@/hooks/useLanguage';
 import { LotteryCard } from '@/components/LotteryCard';
@@ -20,7 +13,7 @@ export default function HomePage() {
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useLanguage();
-  
+
   const { lottery, lotteryStats } = useLottery();
 
   const handleBuyTicket = () => {
@@ -47,7 +40,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center space-x-2"
@@ -60,13 +53,22 @@ export default function HomePage() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+              <a
+                href="#"
+                className="text-gray-300 hover:text-yellow-400 transition-colors font-medium"
+              >
                 {t('navigation.home')}
               </a>
-              <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+              <a
+                href="#"
+                className="text-gray-300 hover:text-yellow-400 transition-colors font-medium"
+              >
                 {t('navigation.lottery')}
               </a>
-              <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+              <a
+                href="#"
+                className="text-gray-300 hover:text-yellow-400 transition-colors font-medium"
+              >
                 {t('navigation.history')}
               </a>
               <LanguageSwitcher />
@@ -81,10 +83,7 @@ export default function HomePage() {
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center space-x-4">
               <LanguageSwitcher />
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-white"
-              >
+              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white">
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
@@ -100,13 +99,22 @@ export default function HomePage() {
             className="md:hidden bg-black/95 backdrop-blur-xl border-t border-yellow-400/20"
           >
             <div className="px-4 py-4 space-y-4">
-              <a href="#" className="block text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+              <a
+                href="#"
+                className="block text-gray-300 hover:text-yellow-400 transition-colors font-medium"
+              >
                 {t('navigation.home')}
               </a>
-              <a href="#" className="block text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+              <a
+                href="#"
+                className="block text-gray-300 hover:text-yellow-400 transition-colors font-medium"
+              >
                 {t('navigation.lottery')}
               </a>
-              <a href="#" className="block text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+              <a
+                href="#"
+                className="block text-gray-300 hover:text-yellow-400 transition-colors font-medium"
+              >
                 {t('navigation.history')}
               </a>
               <button
@@ -138,7 +146,9 @@ export default function HomePage() {
             >
               <div className="inline-flex items-center px-4 py-2 rounded-full bg-yellow-400/10 border border-yellow-400/20 mb-8">
                 <Shield className="w-4 h-4 text-yellow-400 mr-2" />
-                <span className="text-sm font-medium text-yellow-400">100% {t('features.transparency.title')}</span>
+                <span className="text-sm font-medium text-yellow-400">
+                  100% {t('features.transparency.title')}
+                </span>
               </div>
             </motion.div>
 
@@ -175,7 +185,9 @@ export default function HomePage() {
                 className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 hover:border-yellow-400/30 transition-all group"
               >
                 <Trophy className="w-8 h-8 text-yellow-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-3xl font-black text-white mb-1">${lottery.totalPool.toLocaleString()}</div>
+                <div className="text-3xl font-black text-white mb-1">
+                  ${lottery.totalPool.toLocaleString()}
+                </div>
                 <div className="text-sm text-gray-400">{t('hero.currentPrize')}</div>
               </motion.div>
 
@@ -186,7 +198,9 @@ export default function HomePage() {
                 className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 hover:border-yellow-400/30 transition-all group"
               >
                 <Users className="w-8 h-8 text-yellow-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-3xl font-black text-white mb-1">{lotteryStats.activeUsers}</div>
+                <div className="text-3xl font-black text-white mb-1">
+                  {lotteryStats.activeUsers}
+                </div>
                 <div className="text-sm text-gray-400">{t('hero.activePlayers')}</div>
               </motion.div>
 
@@ -196,7 +210,9 @@ export default function HomePage() {
                 transition={{ delay: 0.6 }}
                 className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 hover:border-yellow-400/30 transition-all group"
               >
-                <div className="text-3xl font-black text-white mb-1">{days}d {hours}h</div>
+                <div className="text-3xl font-black text-white mb-1">
+                  {days}d {hours}h
+                </div>
                 <div className="text-sm text-gray-400">{t('hero.timeRemaining')}</div>
               </motion.div>
             </div>
@@ -225,7 +241,7 @@ export default function HomePage() {
             <h2 className="text-4xl font-black text-white mb-4">{t('lottery.currentTitle')}</h2>
             <p className="text-xl text-gray-300">{t('lottery.currentSubtitle')}</p>
           </div>
-          
+
           <div className="max-w-2xl mx-auto">
             <LotteryCard lottery={lottery} onBuyTicket={handleBuyTicket} />
           </div>
@@ -233,12 +249,7 @@ export default function HomePage() {
       </section>
 
       {/* Buy Ticket Modal */}
-      {showBuyModal && (
-        <BuyTicketModal
-          lottery={lottery}
-          onClose={() => setShowBuyModal(false)}
-        />
-      )}
+      {showBuyModal && <BuyTicketModal lottery={lottery} onClose={() => setShowBuyModal(false)} />}
     </div>
   );
 }
