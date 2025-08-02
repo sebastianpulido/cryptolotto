@@ -1,5 +1,5 @@
 import { Connection, PublicKey, Keypair } from '@solana/web3.js';
-import { Program, AnchorProvider, Wallet } from '@coral-xyz/anchor';
+// import { Program, AnchorProvider, Wallet } from '@coral-xyz/anchor';
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
 
@@ -34,7 +34,7 @@ interface Ticket {
 
 export class LotteryService {
   private static connection = new Connection(process.env.SOLANA_RPC_URL!);
-  private static program: Program<any>; // Tipo del programa Anchor
+  // private static program: Program<any>; // Tipo del programa Anchor - commented out until anchor is properly configured
 
   static async getCurrentLottery(): Promise<Lottery | null> {
     try {
