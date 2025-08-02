@@ -33,8 +33,22 @@ interface Ticket {
 }
 
 export class LotteryService {
-  private static connection = new Connection(process.env.SOLANA_RPC_URL!);
-  // private static program: Program<any>; // Tipo del programa Anchor - commented out until anchor is properly configured
+  private static connection: Connection | null = null;
+  
+  // Initialize Solana connection only if RPC URL is provided
+  static {
+    try {
+      const rpcUrl = process.env.SOLANA_RPC_URL;
+      if (rpcUrl && (rpcUrl.startsWith('http://') || rpcUrl.startsWith('https://'))) {
+        this.connection = new Connection(rpcUrl);
+        logger.info('Solana connection initialized');
+      } else {
+        logger.warn('Solana RPC URL not configured or invalid, blockchain features disabled');
+      }
+    } catch (error) {
+      logger.error('Failed to initialize Solana connection:', error);
+    }
+  }
 
   static async getCurrentLottery(): Promise<Lottery | null> {
     try {
