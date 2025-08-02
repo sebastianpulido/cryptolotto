@@ -75,14 +75,14 @@ export function useAuthState() {
       vipLevel: 'basic',
       createdAt: new Date(),
     };
-    
+
     // Generate a mock JWT token for development
     const mockToken = 'mock_jwt_token_' + Date.now();
-    
+
     if (typeof window !== 'undefined') {
       localStorage.setItem('token', mockToken);
     }
-    
+
     setUser(mockUser);
     setIsLoading(false);
   };

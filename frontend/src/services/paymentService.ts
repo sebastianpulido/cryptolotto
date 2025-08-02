@@ -80,7 +80,7 @@ export class PaymentService {
       quantity: data.quantity,
       transactionSignature: data.signature,
     });
-    
+
     const response = await fetch(`${API_BASE_URL}/api/payment/crypto`, {
       method: 'POST',
       headers: {
@@ -96,7 +96,7 @@ export class PaymentService {
 
     console.log('📡 Response status:', response.status);
     console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('❌ Error response:', errorText);
@@ -105,7 +105,7 @@ export class PaymentService {
 
     const result: PaymentResponse = await response.json();
     console.log('✅ Success response:', result);
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Error procesando pago crypto');
     }

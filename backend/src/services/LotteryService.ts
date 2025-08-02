@@ -57,7 +57,7 @@ const mockLottery: Lottery = {
   ticketsSold: 150,
   maxTickets: 10000,
   status: 'active',
-  contractAddress: 'mock_contract_address'
+  contractAddress: 'mock_contract_address',
 };
 
 const mockTickets: Ticket[] = [];
@@ -193,7 +193,7 @@ export class LotteryService {
       // Use mock data in development
       if (process.env.NODE_ENV === 'development') {
         console.log('🎲 LotteryService - Creating mock ticket for user:', userId);
-        
+
         const lottery = await this.getLotteryById(lotteryId);
         if (!lottery) throw new Error('Lotería no encontrada');
 
@@ -217,7 +217,7 @@ export class LotteryService {
         };
 
         mockTickets.push(ticket);
-        
+
         // Update mock lottery
         mockLottery.ticketsSold = ticketCounter;
         mockLottery.totalPool += lottery.ticketPrice;
@@ -346,7 +346,7 @@ export class LotteryService {
         return {
           totalLotteries: 1,
           totalTicketsSold: mockLottery.ticketsSold,
-          totalPrizePool: mockLottery.totalPool
+          totalPrizePool: mockLottery.totalPool,
         };
       }
 

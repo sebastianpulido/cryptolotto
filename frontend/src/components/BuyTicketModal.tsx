@@ -34,13 +34,13 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
   const handleStripePayment = async () => {
     try {
       setIsProcessing(true);
-      
+
       const stripePromise = getStripePromise();
       if (!stripePromise) {
         toast.error('Stripe not configured for development');
         return;
       }
-      
+
       const stripe = await stripePromise;
       if (!stripe) throw new Error('Stripe no disponible');
 
@@ -94,7 +94,7 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
       onClose();
     } catch (error) {
       console.error('Crypto payment error:', error);
-      
+
       // More specific error handling
       if (error instanceof Error) {
         if (error.message.includes('401') || error.message.includes('Unauthorized')) {
@@ -117,8 +117,9 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
   };
 
   // Check if Stripe is configured
-  const isStripeConfigured = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY && 
-                            process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY !== '';
+  const isStripeConfigured =
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY &&
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY !== '';
 
   return (
     <AnimatePresence>
@@ -179,7 +180,9 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
               >
                 <CreditCard className="w-5 h-5 mx-auto mb-1 text-blue-600" />
                 <div className="text-xs font-medium">Stripe</div>
-                <div className="text-xs text-gray-500">{isStripeConfigured ? 'Visa, MC' : 'Disabled'}</div>
+                <div className="text-xs text-gray-500">
+                  {isStripeConfigured ? 'Visa, MC' : 'Disabled'}
+                </div>
               </button>
 
               <button
