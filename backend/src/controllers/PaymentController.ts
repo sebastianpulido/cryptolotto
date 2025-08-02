@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import fetch from 'node-fetch';
 import { logger } from '../utils/logger';
 import { LotteryService } from '../services/LotteryService';
+import { supabase } from '../config/supabase';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',

@@ -6,6 +6,7 @@
   "workspaces": [
     "frontend",
     "backend",
+    "shared",
     "smart-contracts"
   ],
   "scripts": {
@@ -73,8 +74,8 @@
       "cd backend && npx prettier --write"
     ],
     "shared/**/*.{js,jsx,ts,tsx}": [
-      "npx eslint --fix",
-      "npx prettier --write"
+      "cd shared && npx eslint --fix",
+      "cd shared && npx prettier --write"
     ],
     "*.{json,css,md}": [
       "prettier --write"
