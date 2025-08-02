@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CreditCard, Wallet, Loader2 } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
@@ -45,28 +45,7 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
       }
     } catch (error) {
       toast.error(t('buyTicket.error'));
-      console.error(error);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handlePayPalPayment = async () => {
-    try {
-      setIsProcessing(true);
-      const result = await buyTicketMutation.mutateAsync({
-        method: 'paypal',
-        lotteryId: lottery.id,
-        quantity: 1
-      });
-
-      // PayPal manejará la redirección automáticamente
-      if (result.approvalUrl) {
-        window.location.href = result.approvalUrl;
-      }
-    } catch (error) {
-      toast.error(t('buyTicket.error'));
-      console.error(error);
+      // Error handling for payment processing
     } finally {
       setIsProcessing(false);
     }
@@ -91,7 +70,7 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
       onClose();
     } catch (error) {
       toast.error(t('buyTicket.error'));
-      console.error(error);
+      // Error handling for crypto payment processing
     } finally {
       setIsProcessing(false);
     }
@@ -254,12 +233,12 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
                         }
                       } catch (error) {
                         toast.error(t('buyTicket.error'));
-                        console.error(error);
+                        // Error handling for PayPal payment capture
                       }
                     }}
-                    onError={(error) => {
+                    onError={() => {
                       toast.error(t('buyTicket.error'));
-                      console.error(error);
+                      // Error handling for PayPal payment errors
                     }}
                   />
                 </PayPalScriptProvider>

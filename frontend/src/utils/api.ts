@@ -32,24 +32,20 @@ class ApiClient {
       ...options,
     };
 
-    try {
-      const response = await fetch(url, config);
-      
-      // Manejar errores de autenticación
-      if (response.status === 401 && typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-      }
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      throw error;
+    const response = await fetch(url, config);
+    
+    // Manejar errores de autenticación
+    if (response.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
     }
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
   }
 
   async get<T>(endpoint: string): Promise<ApiResponse<T>> {

@@ -5,6 +5,12 @@ export interface PaymentData {
   quantity: number;
 }
 
+interface PaymentResponse {
+  success: boolean;
+  data: unknown;
+  error?: string;
+}
+
 export class PaymentService {
   // Stripe payment
   static async createStripeSession(data: PaymentData): Promise<{ sessionId: string; url: string }> {
@@ -17,12 +23,12 @@ export class PaymentService {
       body: JSON.stringify(data),
     });
 
-    const result = await response.json();
+    const result: PaymentResponse = await response.json();
     if (!result.success) {
       throw new Error(result.error || 'Error creando sesión de pago');
     }
 
-    return result.data;
+    return result.data as { sessionId: string; url: string };
   }
 
   // PayPal payment
@@ -36,15 +42,15 @@ export class PaymentService {
       body: JSON.stringify(data),
     });
 
-    const result = await response.json();
+    const result: PaymentResponse = await response.json();
     if (!result.success) {
       throw new Error(result.error || 'Error creando orden de PayPal');
     }
 
-    return result.data;
+    return result.data as { orderId: string; approvalUrl: string };
   }
 
-  static async capturePayPalOrder(orderId: string): Promise<any> {
+  static async capturePayPalOrder(orderId: string): Promise<unknown> {
     const response = await fetch(`${API_BASE_URL}/api/payment/paypal/capture-order`, {
       method: 'POST',
       headers: {
@@ -54,7 +60,7 @@ export class PaymentService {
       body: JSON.stringify({ orderId }),
     });
 
-    const result = await response.json();
+    const result: PaymentResponse = await response.json();
     if (!result.success) {
       throw new Error(result.error || 'Error capturando pago de PayPal');
     }
@@ -63,7 +69,7 @@ export class PaymentService {
   }
 
   // Crypto payment
-  static async processCryptoPayment(data: PaymentData & { signature: string }): Promise<any> {
+  static async processCryptoPayment(data: PaymentData & { signature: string }): Promise<unknown> {
     const response = await fetch(`${API_BASE_URL}/api/payment/crypto`, {
       method: 'POST',
       headers: {
@@ -73,7 +79,7 @@ export class PaymentService {
       body: JSON.stringify(data),
     });
 
-    const result = await response.json();
+    const result: PaymentResponse = await response.json();
     if (!result.success) {
       throw new Error(result.error || 'Error procesando pago crypto');
     }
