@@ -1,17 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Zap, 
   Shield, 
   Trophy, 
-  Ticket, 
   Users, 
-  Clock, 
-  TrendingUp, 
-  CreditCard, 
-  Wallet,
   Menu,
   X
 } from 'lucide-react';
@@ -33,7 +28,6 @@ export default function HomePage() {
     const token = localStorage.getItem('auth_token');
     if (!token) {
       // Redirect to login or show login modal
-      console.log('User needs to login first');
       // For now, we'll just show the modal anyway for demo purposes
     }
     setShowBuyModal(true);
@@ -199,184 +193,42 @@ export default function HomePage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
+                transition={{ delay: 0.6 }}
                 className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 hover:border-yellow-400/30 transition-all group"
               >
-                <Clock className="w-8 h-8 text-yellow-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-3xl font-black text-white mb-1">{days}{t('hero.days')} {hours}h</div>
+                <div className="text-3xl font-black text-white mb-1">{days}d {hours}h</div>
                 <div className="text-sm text-gray-400">{t('hero.timeRemaining')}</div>
               </motion.div>
             </div>
 
             {/* CTA Button */}
-            <motion.button
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.6 }}
-              onClick={handleBuyTicket}
-              className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-black text-lg px-12 py-4 rounded-full hover:from-yellow-500 hover:to-yellow-600 transition-all transform hover:scale-105 shadow-2xl"
             >
-              {t('hero.cta')}
-            </motion.button>
+              <button
+                onClick={handleBuyTicket}
+                className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold px-12 py-4 rounded-full text-lg hover:from-yellow-500 hover:to-yellow-600 transition-all transform hover:scale-105 shadow-2xl"
+              >
+                {t('hero.buyTicket')}
+              </button>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Current Lottery Section */}
-      <section className="py-20 bg-gradient-to-b from-transparent to-gray-900/20">
+      <section className="py-16 bg-gradient-to-b from-black to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-              {t('lottery.currentLottery')}
-            </h2>
-          </motion.div>
-
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-black text-white mb-4">{t('lottery.currentTitle')}</h2>
+            <p className="text-xl text-gray-300">{t('lottery.currentSubtitle')}</p>
+          </div>
+          
           <div className="max-w-2xl mx-auto">
-            <LotteryCard lottery={lottery} onBuyTicket={handleBuyTicket} />
+            <LotteryCard lottery={lottery} />
           </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-              {t('features.title')}
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Shield,
-                title: t('features.transparency.title'),
-                description: t('features.transparency.description')
-              },
-              {
-                icon: Zap,
-                title: t('features.instant.title'),
-                description: t('features.instant.description')
-              },
-              {
-                icon: TrendingUp,
-                title: t('features.secure.title'),
-                description: t('features.secure.description')
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-                viewport={{ once: true }}
-                className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 hover:border-yellow-400/30 transition-all group"
-              >
-                <feature.icon className="w-12 h-12 text-yellow-400 mx-auto mb-6 group-hover:scale-110 transition-transform" />
-                <h3 className="text-2xl font-bold text-white mb-4 text-center">{feature.title}</h3>
-                <p className="text-gray-300 text-center leading-relaxed">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How it Works Section */}
-      <section className="py-20 bg-gradient-to-b from-gray-900/20 to-transparent">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-              {t('howItWorks.title')}
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                step: "01",
-                title: t('howItWorks.step1.title'),
-                description: t('howItWorks.step1.description'),
-                icon: CreditCard
-              },
-              {
-                step: "02",
-                title: t('howItWorks.step2.title'),
-                description: t('howItWorks.step2.description'),
-                icon: Clock
-              },
-              {
-                step: "03",
-                title: t('howItWorks.step3.title'),
-                description: t('howItWorks.step3.description'),
-                icon: Wallet
-              }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-                viewport={{ once: true }}
-                className="text-center group"
-              >
-                <div className="relative mb-8">
-                  <div className="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                    <item.icon className="w-10 h-10 text-black" />
-                  </div>
-                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center text-sm font-black">
-                    {item.step}
-                  </div>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-4">{item.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-yellow-400/10 via-yellow-400/5 to-yellow-400/10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-              {t('cta.title')} <span className="text-yellow-400">{t('cta.titleHighlight')}</span>?
-            </h2>
-            <p className="text-xl text-gray-300 mb-8">
-              {t('cta.subtitle')}
-            </p>
-            <motion.button
-              onClick={handleBuyTicket}
-              className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-black text-lg px-12 py-4 rounded-full hover:from-yellow-500 hover:to-yellow-600 transition-all transform hover:scale-105 shadow-2xl"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {t('cta.button')}
-            </motion.button>
-          </motion.div>
         </div>
       </section>
 

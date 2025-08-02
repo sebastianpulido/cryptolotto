@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User } from '../../../shared/types';
 import { api } from '../utils/api';
 
@@ -40,7 +40,7 @@ export function useAuth() {
     return {
       user: null,
       login: async () => {
-        console.log('Mock login - implementar autenticación real');
+        // Mock login - implementar autenticación real
       },
       register: async () => {},
       logout: () => {},
