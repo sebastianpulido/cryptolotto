@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
+import fetch from 'node-fetch';
 import { logger } from '../utils/logger';
 import { LotteryService } from '../services/LotteryService';
 
@@ -170,7 +171,7 @@ export class PaymentController {
         success: true, 
         data: { 
           orderId: order.id,
-          approvalUrl: order.links?.find(link => link.rel === 'approve')?.href 
+          approvalUrl: order.links?.find((link: any) => link.rel === 'approve')?.href 
         } 
       });
     } catch (error) {
@@ -212,77 +213,41 @@ export class PaymentController {
     }
   }
 
-  // Funciones auxiliares para PayPal API
-  private static async getPayPalAccessToken(): Promise<string> {
-    const auth = Buffer.from(
-      `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
-    ).toString('base64');
-
-    const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v1/oauth2/token`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: 'grant_type=client_credentials',
-    });
-
-    const data = await response.json();
-    return data.access_token;
-  }
-
-  private static async createPayPalOrderRequest(orderData: any) {
-    const accessToken = await PaymentController.getPayPalAccessToken();
-
-    const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(orderData),
-    });
-
-    return await response.json();
-  }
-
-  private static async capturePayPalOrderRequest(orderId: string) {
-    const accessToken = await PaymentController.getPayPalAccessToken();
-
-    const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    return await response.json();
-  }
-
-  // Procesar pago con criptomonedas (Solana)
-  static async processCryptoPayment(req: Request, res: Response) {
+  // Simular pago con criptomonedas
+  static async cryptoPayment(req: Request, res: Response) {
     try {
-      const { lotteryId, signature, quantity = 1 } = req.body;
+      const { lotteryId, quantity = 1, transactionSignature } = req.body;
       const userId = (req as any).user.id;
 
-      // Aquí implementarías la verificación de la transacción en Solana
-      // Por ahora, simularemos que la transacción es válida
-      
+      // Obtener información de la lotería
       const lottery = await LotteryService.getLotteryById(lotteryId);
       if (!lottery) {
         return res.status(404).json({ success: false, error: 'Lotería no encontrada' });
       }
 
-      // Crear tickets
-      for (let i = 0; i < quantity; i++) {
-        await LotteryService.buyTicket(userId, lotteryId, 'crypto', {
-          transactionSignature: signature,
-          amount: lottery.ticketPrice,
-        });
+      // Verificar disponibilidad
+      if (lottery.ticketsSold + quantity > lottery.maxTickets) {
+        return res.status(400).json({ success: false, error: 'No hay suficientes tickets disponibles' });
       }
 
-      res.json({ success: true, message: 'Pago procesado exitosamente' });
+      // Simular verificación de transacción en blockchain
+      // En producción, aquí verificarías la transacción real
+      if (!transactionSignature || transactionSignature.length < 10) {
+        return res.status(400).json({ success: false, error: 'Firma de transacción inválida' });
+      }
+
+      // Crear tickets en la base de datos
+      const tickets = [];
+      for (let i = 0; i < quantity; i++) {
+        const ticket = await LotteryService.buyTicket(userId, lotteryId, 'crypto', {
+          transactionSignature,
+          amount: lottery.ticketPrice,
+          blockchain: 'solana',
+        });
+        tickets.push(ticket);
+      }
+
+      res.json({ success: true, data: tickets });
     } catch (error) {
       logger.error('Error procesando pago crypto:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
@@ -290,19 +255,61 @@ export class PaymentController {
     }
   }
 
-  // Obtener historial de pagos
-  static async getPaymentHistory(req: Request, res: Response) {
-    try {
-      const userId = (req as any).user.id;
-      
-      // Implementar lógica para obtener historial de pagos
-      // Por ahora retornamos un array vacío
-      
-      res.json({ success: true, data: [] });
-    } catch (error) {
-      logger.error('Error obteniendo historial de pagos:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      res.status(500).json({ success: false, error: errorMessage });
+  // Métodos auxiliares para PayPal
+  private static async createPayPalOrderRequest(orderData: any) {
+    const accessToken = await PaymentController.getPayPalAccessToken();
+    
+    const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(orderData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`PayPal API error: ${response.statusText}`);
     }
+
+    return await response.json();
+  }
+
+  private static async capturePayPalOrderRequest(orderId: string) {
+    const accessToken = await PaymentController.getPayPalAccessToken();
+    
+    const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`PayPal API error: ${response.statusText}`);
+    }
+
+    return await response.json();
+  }
+
+  private static async getPayPalAccessToken(): Promise<string> {
+    const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64');
+    
+    const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${auth}`,
+      },
+      body: 'grant_type=client_credentials',
+    });
+
+    if (!response.ok) {
+      throw new Error(`PayPal auth error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.access_token;
   }
 }

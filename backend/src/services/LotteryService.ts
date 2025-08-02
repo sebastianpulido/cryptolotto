@@ -28,6 +28,26 @@ export class LotteryService {
     }
   }
 
+  static async getLotteryById(id: string): Promise<Lottery | null> {
+    try {
+      const { data, error } = await supabase
+        .from('lotteries')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        logger.error('Error obteniendo lotería por ID:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('Error en getLotteryById:', error);
+      return null;
+    }
+  }
+
   static async createNewLottery(): Promise<Lottery> {
     try {
       // Obtener el último round
