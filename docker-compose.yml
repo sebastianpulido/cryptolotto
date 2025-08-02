@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for development
+  postgres:
+    image: postgres:15-alpine
+    container_name: cryptolotto-postgres-dev
+    environment:
+      POSTGRES_DB: cryptolotto_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - cryptolotto-dev-network
+
+  # Redis for development
+  redis:
+    image: redis:7-alpine
+    container_name: cryptolotto-redis-dev
+    ports:
+      - "6379:6379"
+    networks:
+      - cryptolotto-dev-network
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  cryptolotto-dev-network:
+    driver: bridge
