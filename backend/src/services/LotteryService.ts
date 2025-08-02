@@ -74,16 +74,21 @@ export class LotteryService {
     }
   }
 
-  static async buyTicket(userId: string, lotteryId: string, paymentMethod: string): Promise<Ticket> {
+  static async buyTicket(
+    userId: string, 
+    lotteryId: string, 
+    paymentMethod: string, 
+    paymentData?: any
+  ): Promise<Ticket> {
     try {
       const lottery = await this.getCurrentLottery();
       if (!lottery) throw new Error('No hay lotería activa');
-
+  
       // Verificar que la lotería no esté llena
       if (lottery.ticketsSold >= lottery.maxTickets) {
         throw new Error('Lotería llena');
       }
-
+  
       // Crear ticket en base de datos
       const ticket: Partial<Ticket> = {
         lotteryId,
@@ -91,30 +96,28 @@ export class LotteryService {
         ticketNumber: lottery.ticketsSold + 1,
         purchaseTime: new Date(),
         price: lottery.ticketPrice,
-        isWinner: false
+        paymentMethod,
+        transactionHash: paymentData?.stripeSessionId || paymentData?.paypalOrderId || paymentData?.transactionSignature,
+        paymentData: paymentData ? JSON.stringify(paymentData) : null,
       };
-
+  
       const { data, error } = await supabase
         .from('tickets')
         .insert(ticket)
         .select()
         .single();
-
+  
       if (error) throw error;
-
+  
       // Actualizar contador de tickets vendidos
       await supabase
         .from('lotteries')
         .update({ 
-          ticketsSold: lottery.ticketsSold + 1,
-          totalPool: lottery.totalPool + lottery.ticketPrice
+          tickets_sold: lottery.ticketsSold + 1,
+          total_pool: lottery.totalPool + lottery.ticketPrice
         })
         .eq('id', lotteryId);
-
-      // TODO: Crear ticket en blockchain
-      // await this.buyTicketOnChain(data);
-
-      logger.info(`Ticket comprado: ${data.ticketNumber} para usuario ${userId}`);
+  
       return data;
     } catch (error) {
       logger.error('Error comprando ticket:', error);

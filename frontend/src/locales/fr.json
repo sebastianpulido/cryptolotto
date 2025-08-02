@@ -1,0 +1,110 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "save": "Sauvegarder",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "lottery": "Loterie",
+    "history": "Historique",
+    "profile": "Profil",
+    "login": "Se connecter",
+    "logout": "Se déconnecter",
+    "buyTicket": "Acheter un Ticket"
+  },
+  "hero": {
+    "title": "La Loterie la plus",
+    "titleHighlight": "Transparente",
+    "titleEnd": "au Monde",
+    "subtitle": "Construite sur la blockchain Solana pour une transparence maximale et des paiements instantanés",
+    "cta": "Acheter un Ticket Maintenant",
+    "currentPrize": "Prix Actuel",
+    "activePlayers": "Joueurs Actifs",
+    "timeRemaining": "Temps Restant",
+    "days": "jours",
+    "hours": "heures"
+  },
+  "lottery": {
+    "currentLottery": "Loterie Actuelle",
+    "ticketPrice": "Prix du Ticket",
+    "totalPool": "Cagnotte Totale",
+    "ticketsSold": "Vendus",
+    "participants": "Participants",
+    "endTime": "Se termine",
+    "winner": "Gagnant",
+    "status": {
+      "active": "Active",
+      "ended": "Terminée",
+      "pending": "En attente"
+    }
+  },
+  "buyTicket": {
+    "title": "Acheter un Ticket de Loterie",
+    "selectPayment": "Sélectionnez le mode de paiement",
+    "creditCard": "Carte de Crédit",
+    "crypto": "Cryptomonnaies",
+    "processing": "Traitement...",
+    "success": "Ticket acheté avec succès !",
+    "error": "Erreur lors de l'achat du ticket",
+    "yourNumber": "Votre Numéro",
+    "ticketDetails": "Détails du Ticket",
+    "price": "Prix",
+    "fee": "Frais"
+  },
+  "features": {
+    "title": "Pourquoi choisir CryptoLotto ?",
+    "transparency": {
+      "title": "100% Transparent",
+      "description": "Tous les tirages sont vérifiables sur la blockchain"
+    },
+    "instant": {
+      "title": "Paiements Instantanés",
+      "description": "Recevez vos gains automatiquement"
+    },
+    "secure": {
+      "title": "Super Sécurisé",
+      "description": "Protégé par le réseau Solana"
+    }
+  },
+  "howItWorks": {
+    "title": "Comment ça marche ?",
+    "step1": {
+      "title": "Achetez votre Ticket",
+      "description": "Choisissez votre mode de paiement préféré"
+    },
+    "step2": {
+      "title": "Attendez le Tirage",
+      "description": "Le tirage est effectué automatiquement"
+    },
+    "step3": {
+      "title": "Recevez votre Prix",
+      "description": "Si vous gagnez, vous recevez le paiement automatiquement"
+    }
+  },
+  "cta": {
+    "title": "Prêt à",
+    "titleHighlight": "Gagner",
+    "subtitle": "Rejoignez des milliers de joueurs qui gagnent déjà avec CryptoLotto",
+    "button": "Acheter mon Premier Ticket"
+  },
+  "footer": {
+    "description": "La loterie blockchain la plus transparente et sécurisée au monde",
+    "links": {
+      "about": "À propos",
+      "terms": "Conditions",
+      "privacy": "Confidentialité",
+      "support": "Support"
+    },
+    "copyright": "© 2024 CryptoLotto. Tous droits réservés."
+  }
+}

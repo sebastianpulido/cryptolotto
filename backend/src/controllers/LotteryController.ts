@@ -33,7 +33,8 @@ export class LotteryController {
       res.json({ success: true, data: ticket });
     } catch (error) {
       logger.error('Error comprando ticket:', error);
-      res.status(400).json({ success: false, error: error.message });
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      res.status(400).json({ success: false, error: errorMessage });
     }
   }
 

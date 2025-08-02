@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { PaymentService, PaymentData } from '../services/paymentService';
 
-interface BuyTicketData {
-  method: 'stripe' | 'crypto';
-  quantity: number;
+interface BuyTicketData extends PaymentData {
+  method: 'stripe' | 'paypal' | 'crypto';
+  signature?: string; // Para pagos crypto
 }
 
 export function useBuyTicket() {
@@ -10,17 +11,26 @@ export function useBuyTicket() {
 
   return useMutation({
     mutationFn: async (data: BuyTicketData) => {
-      // Simular compra de ticket para desarrollo
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log('Mock ticket purchase:', data);
-      
-      return {
-        success: true,
-        ticketId: 'mock-ticket-' + Date.now(),
-        ticketNumber: Math.floor(Math.random() * 1000) + 1,
-        quantity: data.quantity,
-      };
+      switch (data.method) {
+        case 'stripe':
+          return await PaymentService.createStripeSession(data);
+        
+        case 'paypal':
+          return await PaymentService.createPayPalOrder(data);
+        
+        case 'crypto':
+          if (!data.signature) {
+            throw new Error('Signature requerida para pagos crypto');
+          }
+          return await PaymentService.processCryptoPayment({
+            lotteryId: data.lotteryId,
+            quantity: data.quantity,
+            signature: data.signature,
+          });
+        
+        default:
+          throw new Error('Método de pago no soportado');
+      }
     },
     onSuccess: () => {
       // Invalidar queries relacionadas

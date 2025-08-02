@@ -2,50 +2,51 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthProvider } from '@/hooks/useAuth';
+import { LanguageProvider } from '@/hooks/useLanguage';
+
+// Import i18n configuration
+import '@/lib/i18n';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000, // 1 minuto
-        gcTime: 10 * 60 * 1000, // 10 minutos (antes era cacheTime)
-        retry: 3,
-        refetchOnWindowFocus: false,
+        staleTime: 60 * 1000, // 1 minute
+        retry: 1,
       },
     },
   }));
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {children}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-            success: {
-              duration: 3000,
-              iconTheme: {
-                primary: '#4ade80',
-                secondary: '#fff',
+      <LanguageProvider>
+        <AuthProvider>
+          {children}
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#1f2937',
+                color: '#fff',
+                border: '1px solid #374151',
               },
-            },
-            error: {
-              duration: 5000,
-              iconTheme: {
-                primary: '#ef4444',
-                secondary: '#fff',
-              },
-            },
-          }}
-        />
-      </AuthProvider>
+            }}
+          />
+        </AuthProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

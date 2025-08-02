@@ -1,0 +1,15 @@
+{
+  "extends": ["../.eslintrc.json", "plugin:node/recommended"],
+  "plugins": ["node"],
+  "rules": {
+    "node/no-missing-import": "off",
+    "node/no-unsupported-features/es-syntax": "off",
+    "node/no-missing-require": "off",
+    "node/shebang": "off",
+    "@typescript-eslint/explicit-function-return-type": "warn"
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  }
+}

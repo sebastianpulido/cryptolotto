@@ -16,12 +16,15 @@ import {
   X
 } from 'lucide-react';
 import { useLottery } from '@/hooks/useLottery';
+import { useLanguage } from '@/hooks/useLanguage';
 import { LotteryCard } from '@/components/LotteryCard';
 import { BuyTicketModal } from '@/components/BuyTicketModal';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export default function HomePage() {
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useLanguage();
   
   const { lottery, lotteryStats } = useLottery();
 
@@ -63,45 +66,60 @@ export default function HomePage() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#home" className="text-gray-300 hover:text-yellow-400 transition-colors">Inicio</a>
-              <a href="#lottery" className="text-gray-300 hover:text-yellow-400 transition-colors">Sorteo</a>
-              <a href="#how-it-works" className="text-gray-300 hover:text-yellow-400 transition-colors">Cómo Funciona</a>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+                {t('navigation.home')}
+              </a>
+              <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+                {t('navigation.lottery')}
+              </a>
+              <a href="#" className="text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+                {t('navigation.history')}
+              </a>
+              <LanguageSwitcher />
+              <button
                 onClick={handleBuyTicket}
-                className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold px-6 py-2 rounded-full hover:shadow-lg hover:shadow-yellow-400/25 transition-all"
+                className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold px-6 py-2 rounded-full hover:from-yellow-500 hover:to-yellow-600 transition-all"
               >
-                Comprar Ticket
-              </motion.button>
+                {t('navigation.buyTicket')}
+              </button>
             </div>
 
             {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden text-white"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            <div className="md:hidden flex items-center space-x-4">
+              <LanguageSwitcher />
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-white"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
             className="md:hidden bg-black/95 backdrop-blur-xl border-t border-yellow-400/20"
           >
             <div className="px-4 py-4 space-y-4">
-              <a href="#home" className="block text-gray-300 hover:text-yellow-400 transition-colors">Inicio</a>
-              <a href="#lottery" className="block text-gray-300 hover:text-yellow-400 transition-colors">Sorteo</a>
-              <a href="#how-it-works" className="block text-gray-300 hover:text-yellow-400 transition-colors">Cómo Funciona</a>
+              <a href="#" className="block text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+                {t('navigation.home')}
+              </a>
+              <a href="#" className="block text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+                {t('navigation.lottery')}
+              </a>
+              <a href="#" className="block text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+                {t('navigation.history')}
+              </a>
               <button
                 onClick={handleBuyTicket}
                 className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-3 rounded-full"
               >
-                Comprar Ticket
+                {t('navigation.buyTicket')}
               </button>
             </div>
           </motion.div>
@@ -109,46 +127,53 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+      <section className="relative pt-20 pb-16 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 via-transparent to-yellow-400/5"></div>
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-yellow-400/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-yellow-400/5 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
+          <div className="text-center">
             {/* Badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center space-x-2 bg-yellow-400/10 border border-yellow-400/30 rounded-full px-6 py-3 mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
             >
-              <Shield className="w-5 h-5 text-yellow-400" />
-              <span className="text-yellow-400 font-semibold">100% Transparente en Blockchain</span>
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-yellow-400/10 border border-yellow-400/20 mb-8">
+                <Shield className="w-4 h-4 text-yellow-400 mr-2" />
+                <span className="text-sm font-medium text-yellow-400">100% {t('features.transparency.title')}</span>
+              </div>
             </motion.div>
 
             {/* Main Title */}
-            <h1 className="text-6xl md:text-8xl font-black mb-6">
-              <span className="text-white">Crypto</span>
-              <span className="bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text text-transparent">Lotto</span>
-            </h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.2 }}
+              className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight"
+            >
+              {t('hero.title')}{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-500">
+                {t('hero.titleHighlight')}
+              </span>{' '}
+              {t('hero.titleEnd')}
+            </motion.h1>
 
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-              La primera lotería completamente descentralizada. 
-              <span className="text-yellow-400 font-semibold"> Compra, juega y gana</span> con 
-              total transparencia en cada sorteo.
-            </p>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.4 }}
+              className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed"
+            >
+              {t('hero.subtitle')}
+            </motion.p>
 
-            {/* Hero Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 max-w-4xl mx-auto">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -157,7 +182,7 @@ export default function HomePage() {
               >
                 <Trophy className="w-8 h-8 text-yellow-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                 <div className="text-3xl font-black text-white mb-1">${lottery.totalPool.toLocaleString()}</div>
-                <div className="text-sm text-gray-400">Premio Actual</div>
+                <div className="text-sm text-gray-400">{t('hero.currentPrize')}</div>
               </motion.div>
 
               <motion.div
@@ -166,20 +191,9 @@ export default function HomePage() {
                 transition={{ delay: 0.5 }}
                 className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 hover:border-yellow-400/30 transition-all group"
               >
-                <Ticket className="w-8 h-8 text-yellow-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-3xl font-black text-white mb-1">{lottery.ticketsSold}</div>
-                <div className="text-sm text-gray-400">Tickets Vendidos</div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 hover:border-yellow-400/30 transition-all group"
-              >
                 <Users className="w-8 h-8 text-yellow-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
                 <div className="text-3xl font-black text-white mb-1">{lotteryStats.activeUsers}</div>
-                <div className="text-sm text-gray-400">Jugadores Activos</div>
+                <div className="text-sm text-gray-400">{t('hero.activePlayers')}</div>
               </motion.div>
 
               <motion.div
@@ -189,85 +203,27 @@ export default function HomePage() {
                 className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 hover:border-yellow-400/30 transition-all group"
               >
                 <Clock className="w-8 h-8 text-yellow-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-3xl font-black text-white mb-1">{days}d {hours}h</div>
-                <div className="text-sm text-gray-400">Tiempo Restante</div>
+                <div className="text-3xl font-black text-white mb-1">{days}{t('hero.days')} {hours}h</div>
+                <div className="text-sm text-gray-400">{t('hero.timeRemaining')}</div>
               </motion.div>
             </div>
 
-            {/* CTA Buttons */}
-                        {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(251, 191, 36, 0.3)" }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleBuyTicket}
-                className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-black text-xl px-12 py-4 rounded-full shadow-2xl hover:shadow-yellow-400/25 transition-all duration-300 relative overflow-hidden group"
-              >
-                <span className="relative z-10 flex items-center space-x-3">
-                  <Zap className="w-6 h-6" />
-                  <span>Comprar Ticket - $1</span>
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </motion.button>
-
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="border-2 border-yellow-400/30 text-yellow-400 font-bold text-xl px-12 py-4 rounded-full hover:bg-yellow-400/10 transition-all duration-300"
-              >
-                Ver Cómo Funciona
-              </motion.button>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        >
-          <div className="w-6 h-10 border-2 border-yellow-400/30 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-yellow-400 rounded-full mt-2 animate-bounce"></div>
+            {/* CTA Button */}
+            <motion.button
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.6 }}
+              onClick={handleBuyTicket}
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-black text-lg px-12 py-4 rounded-full hover:from-yellow-500 hover:to-yellow-600 transition-all transform hover:scale-105 shadow-2xl"
+            >
+              {t('hero.cta')}
+            </motion.button>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* Current Lottery Section */}
-      <section id="lottery" className="py-20 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-yellow-400/5 to-transparent"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
-              Sorteo <span className="text-yellow-400">Activo</span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Únete al sorteo actual y ten la oportunidad de ganar el premio acumulado
-            </p>
-          </motion.div>
-          
-          <LotteryCard 
-            lottery={lottery}
-            onBuyTicket={handleBuyTicket}
-          />
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 bg-gradient-to-b from-transparent to-yellow-400/5">
+      <section className="py-20 bg-gradient-to-b from-transparent to-gray-900/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -276,27 +232,48 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
-              ¿Por qué <span className="text-yellow-400">CryptoLotto</span>?
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+              {t('lottery.currentLottery')}
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="max-w-2xl mx-auto">
+            <LotteryCard lottery={lottery} onBuyTicket={handleBuyTicket} />
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+              {t('features.title')}
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                icon: <Shield className="w-12 h-12" />,
-                title: "100% Transparente",
-                description: "Todos los sorteos son verificables en blockchain. Sin trucos, sin manipulación."
+                icon: Shield,
+                title: t('features.transparency.title'),
+                description: t('features.transparency.description')
               },
               {
-                icon: <Zap className="w-12 h-12" />,
-                title: "Pagos Instantáneos",
-                description: "Gana y recibe tu premio automáticamente. Sin esperas, sin complicaciones."
+                icon: Zap,
+                title: t('features.instant.title'),
+                description: t('features.instant.description')
               },
               {
-                icon: <TrendingUp className="w-12 h-12" />,
-                title: "Mejores Probabilidades",
-                description: "Menos participantes, mejores oportunidades de ganar grandes premios."
+                icon: TrendingUp,
+                title: t('features.secure.title'),
+                description: t('features.secure.description')
               }
             ].map((feature, index) => (
               <motion.div
@@ -305,21 +282,19 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.2 }}
                 viewport={{ once: true }}
-                className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-8 hover:border-yellow-400/30 transition-all group"
+                className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 hover:border-yellow-400/30 transition-all group"
               >
-                <div className="text-yellow-400 mb-6 group-hover:scale-110 transition-transform">
-                  {feature.icon}
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-4">{feature.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{feature.description}</p>
+                <feature.icon className="w-12 h-12 text-yellow-400 mx-auto mb-6 group-hover:scale-110 transition-transform" />
+                <h3 className="text-2xl font-bold text-white mb-4 text-center">{feature.title}</h3>
+                <p className="text-gray-300 text-center leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How it Works */}
-      <section id="how-it-works" className="py-20">
+      {/* How it Works Section */}
+      <section className="py-20 bg-gradient-to-b from-gray-900/20 to-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -328,39 +303,30 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
-              ¿Cómo <span className="text-yellow-400">Funciona</span>?
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+              {t('howItWorks.title')}
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Participar es súper fácil. Solo 4 pasos para ganar grandes premios.
-            </p>
           </motion.div>
-          
-          <div className="grid md:grid-cols-4 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                step: "1",
-                icon: <Users className="w-8 h-8" />,
-                title: "Conecta tu Cuenta",
-                description: "Login con Google o crea una cuenta en segundos"
+                step: "01",
+                title: t('howItWorks.step1.title'),
+                description: t('howItWorks.step1.description'),
+                icon: CreditCard
               },
               {
-                step: "2",
-                icon: <CreditCard className="w-8 h-8" />,
-                title: "Compra tu Ticket",
-                description: "Paga $1 USD con tarjeta o cripto de forma instantánea"
+                step: "02",
+                title: t('howItWorks.step2.title'),
+                description: t('howItWorks.step2.description'),
+                icon: Clock
               },
               {
-                step: "3",
-                icon: <Clock className="w-8 h-8" />,
-                title: "Espera el Sorteo",
-                description: "Cada domingo se realiza el sorteo automático"
-              },
-              {
-                step: "4",
-                icon: <Wallet className="w-8 h-8" />,
-                title: "Recibe tu Premio",
-                description: "Si ganas, recibes el pago automáticamente"
+                step: "03",
+                title: t('howItWorks.step3.title'),
+                description: t('howItWorks.step3.description'),
+                icon: Wallet
               }
             ].map((item, index) => (
               <motion.div
@@ -371,21 +337,16 @@ export default function HomePage() {
                 viewport={{ once: true }}
                 className="text-center group"
               >
-                <div className="relative mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center text-black font-black text-2xl mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <div className="relative mb-8">
+                  <div className="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <item.icon className="w-10 h-10 text-black" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center text-sm font-black">
                     {item.step}
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-yellow-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
-                <div className="text-yellow-400 mb-4 flex justify-center group-hover:scale-110 transition-transform">
-                  {item.icon}
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">
-                  {item.title}
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  {item.description}
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-4">{item.title}</h3>
+                <p className="text-gray-300 leading-relaxed">{item.description}</p>
               </motion.div>
             ))}
           </div>
@@ -393,7 +354,6 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-            {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-yellow-400/10 via-yellow-400/5 to-yellow-400/10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -403,40 +363,22 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-              ¿Listo para <span className="text-yellow-400">Ganar</span>?
+              {t('cta.title')} <span className="text-yellow-400">{t('cta.titleHighlight')}</span>?
             </h2>
             <p className="text-xl text-gray-300 mb-8">
-              Únete a miles de jugadores que ya están ganando con CryptoLotto
+              {t('cta.subtitle')}
             </p>
             <motion.button
-              whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(251, 191, 36, 0.3)" }}
-              whileTap={{ scale: 0.95 }}
               onClick={handleBuyTicket}
-              className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-black text-2xl px-16 py-6 rounded-full shadow-2xl hover:shadow-yellow-400/25 transition-all duration-300"
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-black text-lg px-12 py-4 rounded-full hover:from-yellow-500 hover:to-yellow-600 transition-all transform hover:scale-105 shadow-2xl"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              Comprar Mi Primer Ticket
+              {t('cta.button')}
             </motion.button>
           </motion.div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-yellow-400/20 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5 text-black" />
-              </div>
-              <span className="text-xl font-black text-white">CryptoLotto</span>
-            </div>
-            <div className="text-gray-400 text-center md:text-right">
-              <p>© 2024 CryptoLotto. Todos los derechos reservados.</p>
-              <p className="text-sm mt-1">Juega responsablemente. Solo para mayores de 18 años.</p>
-            </div>
-          </div>
-        </div>
-      </footer>
 
       {/* Buy Ticket Modal */}
       {showBuyModal && (
