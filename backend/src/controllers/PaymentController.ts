@@ -112,15 +112,17 @@ export class PaymentController {
 
     try {
       switch (event.type) {
-        case 'checkout.session.completed':
+        case 'checkout.session.completed': {
           const session = event.data.object as Stripe.Checkout.Session;
           await PaymentController.handleSuccessfulPayment(session);
           break;
+        }
         
-        case 'payment_intent.payment_failed':
+        case 'payment_intent.payment_failed': {
           const paymentIntent = event.data.object as Stripe.PaymentIntent;
           logger.error('Pago fallido:', paymentIntent.id);
           break;
+        }
 
         default:
           logger.info(`Evento no manejado: ${event.type}`);

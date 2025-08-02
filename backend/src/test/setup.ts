@@ -1,7 +1,7 @@
-import { config } from 'dotenv'
+import { config } from 'dotenv';
 
 // Load test environment variables
-config({ path: '.env.test' })
+config({ path: '.env.test' });
 
 // Mock console methods in tests
 global.console = {
@@ -11,7 +11,7 @@ global.console = {
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
-}
+};
 
 // Set test timeout
-jest.setTimeout(10000)
+jest.setTimeout(10000);
