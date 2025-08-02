@@ -32,9 +32,23 @@ interface Ticket {
   paymentData?: string;
 }
 
+interface PaymentData {
+  stripeSessionId?: string;
+  paypalOrderId?: string;
+  transactionSignature?: string;
+  [key: string]: unknown;
+}
+
+interface LotteryStats {
+  totalLotteries: number;
+  totalTicketsSold: number;
+  totalPrizePool: number;
+  [key: string]: unknown;
+}
+
 export class LotteryService {
   private static connection: Connection | null = null;
-  
+
   // Initialize Solana connection only if RPC URL is provided
   static {
     try {
@@ -132,7 +146,7 @@ export class LotteryService {
     userId: string,
     lotteryId: string,
     paymentMethod: string,
-    paymentData?: any
+    paymentData?: PaymentData
   ): Promise<Ticket> {
     try {
       const lottery = await this.getCurrentLottery();
@@ -154,7 +168,8 @@ export class LotteryService {
         transactionHash:
           paymentData?.stripeSessionId ||
           paymentData?.paypalOrderId ||
-          paymentData?.transactionSignature,
+          paymentData?.transactionSignature ||
+          '',
         paymentData: paymentData ? JSON.stringify(paymentData) : undefined,
       };
 
@@ -235,10 +250,10 @@ export class LotteryService {
     }
   }
 
-  static async getLotteryStats(): Promise<any> {
+  static async getLotteryStats(): Promise<LotteryStats> {
     try {
       const { data: stats } = await supabase.rpc('get_lottery_stats');
-      return stats;
+      return stats || { totalLotteries: 0, totalTicketsSold: 0, totalPrizePool: 0 };
     } catch (error) {
       logger.error('Error obteniendo estadísticas:', error);
       throw error;
