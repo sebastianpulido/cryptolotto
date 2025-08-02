@@ -1,0 +1,38 @@
+{
+  "name": "cryptolotto",
+  "version": "1.0.0",
+  "description": "Lotería blockchain simplificada con Solana",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "smart-contracts"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "deploy:contracts": "cd smart-contracts && anchor deploy",
+    "test": "npm run test:frontend && npm run test:backend && npm run test:contracts",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && npm test",
+    "test:contracts": "cd smart-contracts && anchor test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.21",
+    "fastq": "^1.19.1",
+    "postcss": "^8.5.6",
+    "run-parallel": "^1.2.0",
+    "tailwindcss": "^4.1.11"
+  }
+}
