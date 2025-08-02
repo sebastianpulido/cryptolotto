@@ -33,7 +33,7 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
         method: 'stripe',
         lotteryId: lottery.id,
         quantity: 1
-      });
+      }) as { sessionId: string; url: string };
 
       // Redirigir a Stripe Checkout
       const { error } = await stripe.redirectToCheckout({
@@ -210,7 +210,7 @@ export function BuyTicketModal({ lottery, onClose }: BuyTicketModalProps) {
                         method: 'paypal',
                         lotteryId: lottery.id,
                         quantity: 1
-                      });
+                      }) as { orderId: string; approvalUrl: string };
                       return result.orderId;
                     }}
                     onApprove={async (data) => {
