@@ -5,7 +5,7 @@ import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
 
 export class AuthController {
-  static async register(req: Request, res: Response) {
+  static async register(req: Request, res: Response): Promise<void> {
     try {
       const { email, name, password } = req.body;
 
@@ -17,10 +17,11 @@ export class AuthController {
         .single();
 
       if (existingUser) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           success: false, 
           error: 'El usuario ya existe' 
         });
+        return;
       }
 
       // Hash de la contraseña
@@ -56,7 +57,7 @@ export class AuthController {
     }
   }
 
-  static async login(req: Request, res: Response) {
+  static async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
 
@@ -68,19 +69,21 @@ export class AuthController {
         .single();
 
       if (error || !user) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           error: 'Credenciales inválidas'
         });
+        return;
       }
 
       // Verificar contraseña
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           error: 'Credenciales inválidas'
         });
+        return;
       }
 
       // Generar JWT
@@ -103,7 +106,7 @@ export class AuthController {
     }
   }
 
-  static async googleAuth(req: Request, res: Response) {
+  static async googleAuth(req: Request, res: Response): Promise<void> {
     try {
       // Implementar autenticación con Google
       res.json({ success: true, message: 'Google auth no implementado aún' });
@@ -113,11 +116,11 @@ export class AuthController {
     }
   }
 
-  static async logout(req: Request, res: Response) {
+  static async logout(req: Request, res: Response): Promise<void> {
     res.json({ success: true, message: 'Logout exitoso' });
   }
 
-  static async getProfile(req: Request, res: Response) {
+  static async getProfile(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user.id;
       

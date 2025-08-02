@@ -2,12 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabase';
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     
     if (!token) {
-      return res.status(401).json({ success: false, error: 'Token no proporcionado' });
+      res.status(401).json({ success: false, error: 'Token no proporcionado' });
+      return;
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
@@ -19,7 +20,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       .single();
 
     if (error || !user) {
-      return res.status(401).json({ success: false, error: 'Token inválido' });
+      res.status(401).json({ success: false, error: 'Token inválido' });
+      return;
     }
 
     (req as any).user = user;

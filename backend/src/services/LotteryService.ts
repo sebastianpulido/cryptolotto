@@ -2,7 +2,35 @@ import { Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { Program, AnchorProvider, Wallet } from '@coral-xyz/anchor';
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
-import { Lottery, Ticket, User } from '../../../shared/types';
+
+// Define types locally to avoid path issues
+interface Lottery {
+  id: string;
+  round: number;
+  startTime: Date;
+  endTime: Date;
+  ticketPrice: number;
+  totalPool: number;
+  ticketsSold: number;
+  maxTickets: number;
+  status: 'active' | 'drawing' | 'completed';
+  winnerId?: string;
+  winnerTicket?: number;
+  contractAddress: string;
+}
+
+interface Ticket {
+  id: string;
+  lotteryId: string;
+  userId: string;
+  ticketNumber: number;
+  purchaseTime: Date;
+  transactionHash: string;
+  price: number;
+  isWinner: boolean;
+  paymentMethod: string;
+  paymentData?: string;
+}
 
 export class LotteryService {
   private static connection = new Connection(process.env.SOLANA_RPC_URL!);
@@ -118,7 +146,7 @@ export class LotteryService {
         price: lottery.ticketPrice,
         paymentMethod,
         transactionHash: paymentData?.stripeSessionId || paymentData?.paypalOrderId || paymentData?.transactionSignature,
-        paymentData: paymentData ? JSON.stringify(paymentData) : null,
+        paymentData: paymentData ? JSON.stringify(paymentData) : undefined,
       };
   
       const { data, error } = await supabase

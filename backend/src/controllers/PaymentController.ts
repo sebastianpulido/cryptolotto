@@ -5,12 +5,35 @@ import { logger } from '../utils/logger';
 import { LotteryService } from '../services/LotteryService';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-06-20',
+  apiVersion: '2023-10-16',
 });
+
+interface PayPalOrder {
+  id: string;
+  status: string;
+  links?: Array<{ rel: string; href: string }>;
+}
+
+interface PayPalCapture {
+  status: string;
+  purchase_units: Array<{
+    payments: {
+      captures: Array<{
+        id: string;
+        custom_id: string;
+        amount: { value: string };
+      }>;
+    };
+  }>;
+}
+
+interface PayPalTokenResponse {
+  access_token: string;
+}
 
 export class PaymentController {
   // Crear sesión de pago con Stripe
-  static async createStripeSession(req: Request, res: Response) {
+  static async createStripeSession(req: Request, res: Response): Promise<void> {
     try {
       const { lotteryId, quantity = 1 } = req.body;
       const userId = (req as any).user.id;
@@ -18,12 +41,14 @@ export class PaymentController {
       // Obtener información de la lotería
       const lottery = await LotteryService.getLotteryById(lotteryId);
       if (!lottery) {
-        return res.status(404).json({ success: false, error: 'Lotería no encontrada' });
+        res.status(404).json({ success: false, error: 'Lotería no encontrada' });
+        return;
       }
 
       // Verificar disponibilidad
       if (lottery.ticketsSold + quantity > lottery.maxTickets) {
-        return res.status(400).json({ success: false, error: 'No hay suficientes tickets disponibles' });
+        res.status(400).json({ success: false, error: 'No hay suficientes tickets disponibles' });
+        return;
       }
 
       // Crear sesión de Stripe
@@ -36,9 +61,9 @@ export class PaymentController {
               product_data: {
                 name: `CryptoLotto Ticket - Round #${lottery.round}`,
                 description: `Ticket para la lotería Round #${lottery.round}`,
-                images: ['https://your-domain.com/lottery-ticket.png'], // Añadir imagen del ticket
+                images: ['https://your-domain.com/lottery-ticket.png'],
               },
-              unit_amount: Math.round(lottery.ticketPrice * 100), // Stripe usa centavos
+              unit_amount: Math.round(lottery.ticketPrice * 100),
             },
             quantity,
           },
@@ -70,7 +95,7 @@ export class PaymentController {
   }
 
   // Webhook de Stripe para confirmar pagos
-  static async stripeWebhook(req: Request, res: Response) {
+  static async stripeWebhook(req: Request, res: Response): Promise<void> {
     const sig = req.headers['stripe-signature'] as string;
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 
@@ -80,7 +105,8 @@ export class PaymentController {
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (error) {
       logger.error('Error verificando webhook de Stripe:', error);
-      return res.status(400).send(`Webhook Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      res.status(400).send(`Webhook Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      return;
     }
 
     try {
@@ -107,7 +133,7 @@ export class PaymentController {
   }
 
   // Procesar pago exitoso
-  private static async handleSuccessfulPayment(session: Stripe.Checkout.Session) {
+  private static async handleSuccessfulPayment(session: Stripe.Checkout.Session): Promise<void> {
     const { userId, lotteryId, quantity } = session.metadata!;
     
     try {
@@ -116,19 +142,18 @@ export class PaymentController {
         await LotteryService.buyTicket(userId, lotteryId, 'stripe', {
           stripeSessionId: session.id,
           stripePaymentIntentId: session.payment_intent as string,
-          amount: session.amount_total! / 100, // Convertir de centavos a dólares
+          amount: session.amount_total! / 100,
         });
       }
 
       logger.info(`Tickets creados exitosamente para usuario ${userId}, sesión ${session.id}`);
     } catch (error) {
       logger.error('Error creando tickets después del pago:', error);
-      // Aquí podrías implementar lógica de reembolso automático
     }
   }
 
   // Crear orden de PayPal
-  static async createPayPalOrder(req: Request, res: Response) {
+  static async createPayPalOrder(req: Request, res: Response): Promise<void> {
     try {
       const { lotteryId, quantity = 1 } = req.body;
       const userId = (req as any).user.id;
@@ -136,12 +161,14 @@ export class PaymentController {
       // Obtener información de la lotería
       const lottery = await LotteryService.getLotteryById(lotteryId);
       if (!lottery) {
-        return res.status(404).json({ success: false, error: 'Lotería no encontrada' });
+        res.status(404).json({ success: false, error: 'Lotería no encontrada' });
+        return;
       }
 
       // Verificar disponibilidad
       if (lottery.ticketsSold + quantity > lottery.maxTickets) {
-        return res.status(400).json({ success: false, error: 'No hay suficientes tickets disponibles' });
+        res.status(400).json({ success: false, error: 'No hay suficientes tickets disponibles' });
+        return;
       }
 
       const totalAmount = (lottery.ticketPrice * quantity).toFixed(2);
@@ -165,13 +192,13 @@ export class PaymentController {
           brand_name: 'CryptoLotto',
           user_action: 'PAY_NOW',
         },
-      });
+      }) as PayPalOrder;
 
       res.json({ 
         success: true, 
         data: { 
           orderId: order.id,
-          approvalUrl: order.links?.find((link: any) => link.rel === 'approve')?.href 
+          approvalUrl: order.links?.find(link => link.rel === 'approve')?.href 
         } 
       });
     } catch (error) {
@@ -182,11 +209,11 @@ export class PaymentController {
   }
 
   // Capturar pago de PayPal
-  static async capturePayPalOrder(req: Request, res: Response) {
+  static async capturePayPalOrder(req: Request, res: Response): Promise<void> {
     try {
       const { orderId } = req.body;
 
-      const capture = await PaymentController.capturePayPalOrderRequest(orderId);
+      const capture = await PaymentController.capturePayPalOrderRequest(orderId) as PayPalCapture;
       
       if (capture.status === 'COMPLETED') {
         // Extraer información del custom_id
@@ -214,7 +241,7 @@ export class PaymentController {
   }
 
   // Simular pago con criptomonedas
-  static async cryptoPayment(req: Request, res: Response) {
+  static async cryptoPayment(req: Request, res: Response): Promise<void> {
     try {
       const { lotteryId, quantity = 1, transactionSignature } = req.body;
       const userId = (req as any).user.id;
@@ -222,18 +249,20 @@ export class PaymentController {
       // Obtener información de la lotería
       const lottery = await LotteryService.getLotteryById(lotteryId);
       if (!lottery) {
-        return res.status(404).json({ success: false, error: 'Lotería no encontrada' });
+        res.status(404).json({ success: false, error: 'Lotería no encontrada' });
+        return;
       }
 
       // Verificar disponibilidad
       if (lottery.ticketsSold + quantity > lottery.maxTickets) {
-        return res.status(400).json({ success: false, error: 'No hay suficientes tickets disponibles' });
+        res.status(400).json({ success: false, error: 'No hay suficientes tickets disponibles' });
+        return;
       }
 
       // Simular verificación de transacción en blockchain
-      // En producción, aquí verificarías la transacción real
       if (!transactionSignature || transactionSignature.length < 10) {
-        return res.status(400).json({ success: false, error: 'Firma de transacción inválida' });
+        res.status(400).json({ success: false, error: 'Firma de transacción inválida' });
+        return;
       }
 
       // Crear tickets en la base de datos
@@ -255,8 +284,38 @@ export class PaymentController {
     }
   }
 
+  // Alias para compatibilidad con rutas
+  static processCryptoPayment = PaymentController.cryptoPayment;
+
+  // Obtener historial de pagos
+  static async getPaymentHistory(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any).user.id;
+
+      const { data: tickets, error } = await supabase
+        .from('tickets')
+        .select(`
+          id,
+          price,
+          payment_method,
+          purchase_time,
+          transaction_hash,
+          lotteries (round, status)
+        `)
+        .eq('user_id', userId)
+        .order('purchase_time', { ascending: false });
+
+      if (error) throw error;
+
+      res.json({ success: true, data: tickets });
+    } catch (error) {
+      logger.error('Error obteniendo historial de pagos:', error);
+      res.status(500).json({ success: false, error: 'Error interno del servidor' });
+    }
+  }
+
   // Métodos auxiliares para PayPal
-  private static async createPayPalOrderRequest(orderData: any) {
+  private static async createPayPalOrderRequest(orderData: any): Promise<unknown> {
     const accessToken = await PaymentController.getPayPalAccessToken();
     
     const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`, {
@@ -275,7 +334,7 @@ export class PaymentController {
     return await response.json();
   }
 
-  private static async capturePayPalOrderRequest(orderId: string) {
+  private static async capturePayPalOrderRequest(orderId: string): Promise<unknown> {
     const accessToken = await PaymentController.getPayPalAccessToken();
     
     const response = await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`, {
@@ -309,7 +368,7 @@ export class PaymentController {
       throw new Error(`PayPal auth error: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as PayPalTokenResponse;
     return data.access_token;
   }
 }

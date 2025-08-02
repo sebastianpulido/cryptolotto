@@ -22,6 +22,8 @@ export interface Ticket {
   transactionHash: string;
   price: number;
   isWinner: boolean;
+  paymentMethod: string;
+  paymentData?: string;
 }
 
 export interface User {
